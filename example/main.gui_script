@@ -1,8 +1,9 @@
 local defquest = require("defquest.defquest")
 
-
 function init(self)
-
+	defquest.use_defsave = true
+	defquest.use_defwindow = true
+	defquest.init()
 end
 
 function final(self)
@@ -10,7 +11,7 @@ function final(self)
 end
 
 function update(self, dt)
-
+	defquest.update(dt)
 end
 
 function on_message(self, message_id, message, sender)

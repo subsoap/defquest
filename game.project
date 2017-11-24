@@ -1,6 +1,6 @@
 [project]
 title = DefQuest
-dependencies = https://github.com/subsoap/defsave/archive/master.zip
+dependencies = https://github.com/subsoap/defsave/archive/master.zip,https://github.com/subsoap/defwindow/archive/master.zip
 
 [library]
 include_dirs = defquest
