@@ -33,6 +33,8 @@
 
 local M = {}
 
+M.time_now = 0
+
 local DEFAULT_NTP_HOSTS = {
 	'time1.google.com',
 	'time2.google.com',
@@ -132,6 +134,13 @@ function M.get_time()
 	local ts = assert(t:get(10), 'NTP: Check failed')
 	assert(type(ts == 'number') and ts > 1483228800)
 	return ts	
+end
+
+function M.update_time()
+	local t = assert(M.start_time_check())
+	local ts = assert(t:get(10), 'NTP: Check failed')
+	assert(type(ts == 'number') and ts > 1483228800)
+	M.time_now = ts	
 end
 
 return M

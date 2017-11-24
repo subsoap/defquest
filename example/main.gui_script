@@ -4,6 +4,8 @@ function init(self)
 	defquest.use_defsave = true
 	defquest.use_defwindow = true
 	defquest.init()
+	
+	self.node_status = gui.get_node("status")
 end
 
 function final(self)
@@ -12,6 +14,12 @@ end
 
 function update(self, dt)
 	defquest.update(dt)
+	
+	if defquest.disconnected == true then
+		gui.set_text(self.node_status, "DISCONNECTED")
+	else
+		gui.set_text(self.node_status, "CONNECTED")
+	end
 end
 
 function on_message(self, message_id, message, sender)

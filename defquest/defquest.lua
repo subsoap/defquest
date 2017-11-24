@@ -2,13 +2,19 @@
 local M = {}
 M.ntp = require("defquest.ntp")
 
-M.utc_now = nil
+M.time_now = 0
+
 
 M.quests = {}
 M.defsave = nil
 M.defwindow = nil
 M.use_defsave = false
 M.use_defwindow = false
+M.disconnected = false
+M.retry_counter = 0
+M.retry_timer = 10
+M.retry_attempts = 0
+M.retry_attempts_max = -1
 
 function M.window_focus_update(self, event, data)
 	if event == window.WINDOW_EVENT_FOCUS_GAINED then
@@ -40,11 +46,34 @@ function M.clear_all()
 end
 
 function M.sync_ntp()
-	M.utc_now = M.ntp.get_time()
+	if not pcall(M.ntp.update_time) then
+		print("DefQuest: Warning cannot sync with NTP servers")
+		M.disconnected = true
+		return false
+	else
+		M.time_now = M.ntp.time_now
+		M.disconnected = false
+		if M.retry_counter > 0 then
+			print("DefQuest: NTP servers have successfully synced after a disconnect")
+		end
+		M.retry_counter = 0
+		M.retry_attempts = 0
+		return true
+	end
 end
 
 function M.update(dt)
-	M.utc_now = M.utc_now + dt
+	M.time_now = M.time_now + dt
+	if M.disconnected == true then
+		M.retry_counter = M.retry_counter + dt
+	end
+	if M.retry_counter >= M.retry_timer then
+		M.retry_counter = M.retry_counter - M.retry_timer
+		if not M.sync_ntp() then
+			M.retry_attempts = M.retry_attempts + 1
+			print("DefQuest: NTP sync retry attempt " .. tostring(M.retry_attempts) .. " failed")
+		end
+	end
 end
 
 return M
