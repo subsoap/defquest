@@ -3,7 +3,9 @@ local defquest = require("defquest.defquest")
 function init(self)
 	defquest.use_defsave = true
 	defquest.use_defwindow = true
+	defquest.verbose = true
 	defquest.init()
+	
 	
 	self.node_status = gui.get_node("status")
 end

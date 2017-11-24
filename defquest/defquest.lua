@@ -15,6 +15,7 @@ M.retry_counter = 0
 M.retry_timer = 10
 M.retry_attempts = 0
 M.retry_attempts_max = -1
+M.verbose = false -- if true then successful connection events will be printed, if false only errors
 
 function M.window_focus_update(self, event, data)
 	if event == window.WINDOW_EVENT_FOCUS_GAINED then
@@ -52,6 +53,7 @@ function M.sync_ntp()
 		return false
 	else
 		M.time_now = M.ntp.time_now
+		if M.verbose then print("DefQuest: Time synced - " .. tostring(M.time_now)) end
 		M.disconnected = false
 		if M.retry_counter > 0 then
 			print("DefQuest: NTP servers have successfully synced after a disconnect")
