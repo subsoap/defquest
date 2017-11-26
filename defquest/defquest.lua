@@ -3,19 +3,20 @@ local M = {}
 M.ntp = require("defquest.ntp")
 M.mt = require("defquest.mt")
 
-M.time_now = 0
+M.time_now = 0 -- the current time, check if defos.isconnected is true to trust this or not
+M.time_offset = 0 -- a time offset option which is applied to time_now whenever syncing happens - mostly only useful to control timezone offset for midnight/noon
 
 
-M.quests = {}
-M.defsave = nil
-M.defwindow = nil
-M.use_defsave = true
-M.use_defwindow = true
-M.disconnected = true
-M.retry_counter = 0
-M.retry_timer = 10
-M.retry_attempts = 0
-M.retry_attempts_max = -1
+M.quests = {} -- 
+M.defsave = nil -- if defsave is used it's loaded here
+M.defwindow = nil -- if defwindow is used it's loaded here
+M.use_defsave = true -- to use defsave or not
+M.use_defwindow = true -- to use defwindow or not
+M.disconnected = true -- if disconnected is true then you should not trust synced time / temp disable time based features
+M.retry_counter = 0 -- current counter value of disconnected retry timer
+M.retry_timer = 10 -- total time in seconds between disconnected retry attemps
+M.retry_attempts = 0 -- current counter value of number of retry attempts
+M.retry_attempts_max = -1 -- maximum retry attempts allow (currently not used)
 M.verbose = true -- if true then successful connection events will be printed, if false only errors
 M.use_server_time = true -- if true then NTP servers will be used to sync the current time with, if not then local time will be used only
 M.allow_local_time = false -- if true then if NTP servers can't be reached then local time will be synced (could have BAD results)
@@ -30,6 +31,36 @@ local function round(x)
 	if a < 0.5 then a = 0
 	else a = 1 end
 	return x + a
+end
+
+function M.difference_from_now(seconds)
+	return seconds - M.time_now
+end
+
+function M.format_time(total_seconds)
+	if total_seconds < 60 * 60 then -- less than an hour
+		local seconds = total_seconds % 60
+		local minutes = math.floor(total_seconds / 60)
+		return tostring(minutes) .. "m " .. tostring(seconds) .. "s"
+	elseif total_seconds < 60 * 60 * 24 then -- less than a day
+		local seconds = total_seconds % 60
+		local minutes = math.floor(total_seconds / 60) % 60
+		local hours = math.floor(total_seconds / 3600)
+		return tostring(hours) .. "h " .. tostring(minutes) .. "m " .. tostring(seconds) .. "s"		
+	elseif total_seconds < 60 * 60 * 24 * 365 then -- less than a year
+		local seconds = total_seconds % 60
+		local minutes = math.floor(total_seconds / 60) % 60
+		local hours = math.floor(total_seconds / 3600) % 24
+		local days = math.floor(total_seconds / (3600 * 24))
+		return tostring(days) .. "d " .. tostring(hours) .. "h " .. tostring(minutes) .. "m " .. tostring(seconds) .. "s"		
+	else
+		local seconds = total_seconds % 60
+		local minutes = math.floor(total_seconds / 60) % 60
+		local hours = math.floor(total_seconds / 3600) % 24 
+		local days = math.floor(total_seconds / (3600 * 24)) % 365 
+		local years = math.floor(total_seconds / (3600 * 24 * 365))
+		return tostring(years) .. "y " .. tostring(days) .. "d " .. tostring(hours) .. "h " .. tostring(minutes) .. "m " .. tostring(seconds) .. "s"				
+	end
 end
 
 function M.window_focus_update(self, event, data)
@@ -148,7 +179,7 @@ function M.sync_ntp()
 		M.disconnected = true
 		return false
 	else
-		M.time_now = M.ntp.time_now
+		M.time_now = M.ntp.time_now + M.time_offset
 		if M.verbose then print("DefQuest: Time synced - " .. tostring(M.time_now)) end
 		M.disconnected = false
 		if M.retry_counter > 0 then

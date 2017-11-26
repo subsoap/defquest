@@ -27,6 +27,7 @@ function init(self)
 	self.node_status = gui.get_node("status")
 	self.node_time = gui.get_node("time")
 	
+	print(defquest.format_time(123456789))
 
 end
 
