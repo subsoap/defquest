@@ -1,13 +1,17 @@
 local defquest = require("defquest.defquest")
+local defsave = require("defsave.defsave")
 
 function init(self)
-	defquest.use_defsave = true
-	defquest.use_defwindow = true
+	defsave.appname = "defquest"
+	defsave.autosave = true
+	
+	--defquest.use_defsave = false
+	--defquest.use_defwindow = false
 	defquest.verbose = true
 	defquest.init()
 	
-	defquest.add(nil, {minutes = 5}, {reward_gold = 100})
-	defquest.add(nil, {minutes = 60}, {reward_gold = 100})
+	--defquest.add(nil, {minutes = 5}, {reward_gold = 100})
+	--defquest.add("hour_wait", {minutes = 60}, {reward_gold = 100})
 	
 	pprint(defquest.quests)
 	
@@ -18,7 +22,8 @@ function init(self)
 end
 
 function final(self)
-	
+	defquest.final()
+	defsave.save_all()
 end
 
 function update(self, dt)

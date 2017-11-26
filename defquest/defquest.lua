@@ -8,8 +8,8 @@ M.time_now = 0
 M.quests = {}
 M.defsave = nil
 M.defwindow = nil
-M.use_defsave = false
-M.use_defwindow = false
+M.use_defsave = true
+M.use_defwindow = true
 M.disconnected = true
 M.retry_counter = 0
 M.retry_timer = 10
@@ -18,6 +18,7 @@ M.retry_attempts_max = -1
 M.verbose = false -- if true then successful connection events will be printed, if false only errors
 M.use_server_time = true -- if true then NTP servers will be used to sync the current time with, if not then local time will be used only
 M.allow_local_time = false -- if true then if NTP servers can't be reached then local time will be synced
+M.defsave_filename = "defquest"
 
 function M.window_focus_update(self, event, data)
 	if event == window.WINDOW_EVENT_FOCUS_GAINED then
@@ -30,6 +31,10 @@ function M.init()
 	
 	if M.use_defsave == true then
 		M.defsave = require("defsave.defsave")
+		M.defsave.load("defquest")
+		--pprint(M.defsave.loaded)
+		M.quests = M.defsave.get(M.defsave_filename, "defquest") or {}
+		--pprint(M.quests)
 	end
 	if M.use_defwindow == true then
 		M.defwindow = require("defwindow.defwindow")
@@ -62,12 +67,18 @@ function M.add(id, time, data)
 	else
 		M.quests[id] = quest
 	end
+	M.defsave.set(M.defsave_filename, "defquest", M.quests )
+	pprint(M.defsave.get(M.defsave_filename, "defquest"))
+	--pprint(M.quests)
 end
 
 function M.mark_finished()
 end
 
-function M.get_finished(number)
+function M.get_finished(limit)
+end
+
+function M.clear(id)
 end
 
 function M.clear_finished()
@@ -106,6 +117,10 @@ function M.update(dt)
 			print("DefQuest: NTP sync retry attempt " .. tostring(M.retry_attempts) .. " failed")
 		end
 	end
+end
+
+function M.final()
+	M.defsave.save_all()
 end
 
 return M
