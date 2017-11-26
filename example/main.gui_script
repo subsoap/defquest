@@ -1,7 +1,27 @@
 local defquest = require("defquest.defquest")
 local defsave = require("defsave.defsave")
 
+local quests_text = ""
+
+local function construct_quests_text()
+	local quests_text_active = "Active Quests: \n"
+	local quests_text_finished = "Finished Quests: \n"
+	for key, value in pairs(defquest.quests) do
+		if defquest.quests[key].finished ~= true then
+			local quest_text = "  " .. key .. " " .. defquest.format_time(defquest.get_time_left(key))
+			quests_text_active = quests_text_active .. quest_text .. " \n"
+		else
+			quests_text_finished = quests_text_finished .. "  " .. key .. " \n"
+		end
+	end
+	return quests_text_active .. "\n" .. quests_text_finished
+	
+end
+
 function init(self)
+	
+	
+	
 	defsave.appname = "defquest"
 	defsave.autosave = true
 	
@@ -10,22 +30,24 @@ function init(self)
 	defquest.verbose = true
 	defquest.init()
 	
-	--defquest.add(nil, {minutes = 5}, {reward_gold = 100})
-	--defquest.add(nil, {minutes = 1}, {reward_gold = 100})
-	--defquest.add(nil, {minutes = 1}, {reward_gold = 100})
-	--defquest.add(nil, {minutes = 1}, {reward_gold = 100})
-	--defquest.add(nil, {minutes = 1}, {reward_gold = 100})
-	--defquest.add(nil, {minutes = 2}, {reward_gold = 100})
+	defquest.add(nil, {minutes = 5}, {reward_gold = 100})
+	defquest.add(nil, {seconds = 10}, {reward_gold = 100})
+	defquest.add(nil, {minutes = 1}, {reward_gold = 100})
+	defquest.add(nil, {minutes = 1}, {reward_gold = 100})
+	defquest.add(nil, {minutes = 1}, {reward_gold = 100})
+	defquest.add(nil, {minutes = 1}, {reward_gold = 100})
+	defquest.add(nil, {minutes = 2}, {reward_gold = 100})
 	defquest.add(nil, {midnight = true}, {reward_gold = 100})
 	defquest.add(nil, {noon = true}, {reward_gold = 100})
 	print(defquest.time_now)
 	
 	--defquest.add("hour_wait", {minutes = 60}, {reward_gold = 100})
 	
-	pprint(defquest.quests)
+	--pprint(defquest.quests)
 	
 	self.node_status = gui.get_node("status")
 	self.node_time = gui.get_node("time")
+	self.node_quests = gui.get_node("quests")
 	
 	print(defquest.format_time(123456789))
 
@@ -37,8 +59,10 @@ end
 
 function update(self, dt)
 	defquest.update(dt)
+	--defquest.mark_finished()
 	
 	gui.set_text(self.node_time, defquest.time_now)
+	gui.set_text(self.node_quests, construct_quests_text())
 	
 	if defquest.disconnected == true then
 		gui.set_text(self.node_status, "DISCONNECTED")

@@ -229,8 +229,7 @@ nodes {
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
   text: "Active Quests:\n"
-  "Completed Quests:\n"
-  "Finalized Quests:"
+  "Finished Quests:"
   font: "system_font"
   id: "quests"
   xanchor: XANCHOR_NONE

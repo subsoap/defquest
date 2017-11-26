@@ -37,24 +37,32 @@ function M.difference_from_now(seconds)
 	return seconds - M.time_now
 end
 
+function M.get_time_left(id)
+	return M.difference_from_now(M.quests[id].end_time)
+end
+
 function M.format_time(total_seconds)
-	if total_seconds < 60 * 60 then -- less than an hour
-		local seconds = total_seconds % 60
+
+	if total_seconds <= 0 then
+		 M.check_timer_counter = M.check_timer
+		return "0m 0s"
+	elseif total_seconds < 60 * 60 then -- less than an hour
+		local seconds = round(total_seconds % 60)
 		local minutes = math.floor(total_seconds / 60)
 		return tostring(minutes) .. "m " .. tostring(seconds) .. "s"
 	elseif total_seconds < 60 * 60 * 24 then -- less than a day
-		local seconds = total_seconds % 60
+		local seconds = round(total_seconds % 60)
 		local minutes = math.floor(total_seconds / 60) % 60
 		local hours = math.floor(total_seconds / 3600)
 		return tostring(hours) .. "h " .. tostring(minutes) .. "m " .. tostring(seconds) .. "s"		
 	elseif total_seconds < 60 * 60 * 24 * 365 then -- less than a year
-		local seconds = total_seconds % 60
+		local seconds = round(total_seconds % 60)
 		local minutes = math.floor(total_seconds / 60) % 60
 		local hours = math.floor(total_seconds / 3600) % 24
 		local days = math.floor(total_seconds / (3600 * 24))
 		return tostring(days) .. "d " .. tostring(hours) .. "h " .. tostring(minutes) .. "m " .. tostring(seconds) .. "s"		
 	else
-		local seconds = total_seconds % 60
+		local seconds = round(total_seconds % 60)
 		local minutes = math.floor(total_seconds / 60) % 60
 		local hours = math.floor(total_seconds / 3600) % 24 
 		local days = math.floor(total_seconds / (3600 * 24)) % 365 
