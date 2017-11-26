@@ -136,8 +136,6 @@ function M.add(id, time, data)
 		M.quests[id] = quest
 	end
 	M.defsave.set(M.defsave_filename, "defquest", M.quests )
-	--pprint(M.defsave.get(M.defsave_filename, "defquest"))
-	--pprint(M.quests)
 end
 
 function M.quest_exists(id)
@@ -161,16 +159,28 @@ function M.mark_finished()
 	return quests_finished
 end
 
-function M.get_finished(limit)
+function M.get_finished()
+	local quests_finished
+	for key, value in pairs(M.quests) do
+		if M.quests[key].finished == true then
+			table.insert(quests_finished, key)
+		end
+	end
+	return quests_finished
 end
 
 function M.clear(id)
+	M.quests[id] = nil
 end
 
 function M.clear_finished()
+	for key, value in pairs(M.get_finished()) do
+		M.quests[key] = nil
+	end
 end
 
 function M.clear_all()
+	M.quests = {}
 end
 
 function M.sync_ntp()
