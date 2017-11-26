@@ -38,12 +38,13 @@ Time is a table with all values optional but you should set at least one of the 
 
 defquest.add(nil, {hours = 1}, {prize = 25})
 
+If you want a reset time based on midnight or noon then you can set time.midnight or time.noon to true. This will set the next reset to the follow midnight / next day's noon (or today's noon if it's not yet noon). This time is NOT based on local time but on UTC +0. (I honestly don't know with certainty if these time related things are accurate so hopefully someone who knows about it better can sanity check it...)
+
 ## Information
 
 DefQuest is meant for games which have frequent or always on Internet connections. You can use DefQuest offline, but it defeats its purpose.
 
 By default, DefQuest saves its data (using DefSave) to a "defquest" file. You can set the defquest.defsave_filename string to another file, such as your user profile/game data so that users cannot simply swap their defquest files to cheese quest completion over and over.
 
-Beware of setting times based on "midnight" or "noon" in your local time zone, because the user can change their local device timezone and time at will and use that to time travel. It's better to set times based on amounts of time away from current time so that the future time is timezone agnostic.
 
 Beware of using Defold's build in date/time functions as they by default work on local timezone.

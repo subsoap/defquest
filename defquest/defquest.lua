@@ -24,6 +24,13 @@ M.keep_finalized = false -- set to false if you want finalized quests not stored
 M.check_timer = 60 -- number of seconds in between automatic checks to see if any quests are finished
 M.check_timer_counter = 0 -- current check counter value in seconds
 
+local function round(x)
+	local a = x % 1
+	x = x - a
+	if a < 0.5 then a = 0
+	else a = 1 end
+	return x + a
+end
 
 function M.window_focus_update(self, event, data)
 	if event == window.WINDOW_EVENT_FOCUS_GAINED then
@@ -60,17 +67,33 @@ end
 
 function M.add(id, time, data)
 	local time_now = M.time_now
-	time.seconds = time.seconds or 0
-	time.minutes = time.minutes or 0
-	time.hours = time.hours or 0
-	time.days = time.days or 0
-	time.years = time.years or 0
+	if time.midnight == true then
+		time_now = (round(time_now / 86400) + 1) * 86400
+	elseif time.noon == true then
+		local past_noon_check = (round(time_now / 86400)) * 86400 + 43200
+		if M.time_now >= past_noon_check then
+			time_now = (round(time_now / 86400) + 1) * 86400 + 43200
+		else
+			time_now = (round(time_now / 86400)) * 86400 + 43200
+		end
+	else
+	
+		time.seconds = time.seconds or 0
+		time.minutes = time.minutes or 0
+		time.hours = time.hours or 0
+		time.days = time.days or 0
+		time.years = time.years or 0
 		
-	time_now = time_now + time.seconds
-	time_now = time_now + time.minutes * 60
-	time_now = time_now + time.hours * 60 * 60
-	time_now = time_now + time.days * 60 * 60 * 24
-	time_now = time_now + time.years * 60 * 60 * 24 * 365
+		time_now = time_now + time.seconds
+		time_now = time_now + time.minutes * 60
+		time_now = time_now + time.hours * 60 * 60
+		time_now = time_now + time.days * 60 * 60 * 24
+		time_now = time_now + time.years * 60 * 60 * 24 * 365
+	end
+	if time.offset ~= nil then
+		time_now = time_now + time.offset
+	end
+	
 
 	local quest = {}
 	quest.id = id
