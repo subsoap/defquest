@@ -168,7 +168,7 @@ function M.mark_finished()
 end
 
 function M.get_finished()
-	local quests_finished
+	local quests_finished = {}
 	for key, value in pairs(M.quests) do
 		if M.quests[key].finished == true then
 			table.insert(quests_finished, key)
@@ -179,16 +179,19 @@ end
 
 function M.clear(id)
 	M.quests[id] = nil
+	M.defsave.set(M.defsave_filename, "defquest", M.quests )
 end
 
 function M.clear_finished()
 	for key, value in pairs(M.get_finished()) do
-		M.quests[key] = nil
+		M.quests[value] = nil
 	end
+	M.defsave.set(M.defsave_filename, "defquest", M.quests )
 end
 
 function M.clear_all()
 	M.quests = {}
+	M.defsave.set(M.defsave_filename, "defquest", M.quests )
 end
 
 function M.sync_ntp()

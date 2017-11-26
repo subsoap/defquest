@@ -278,7 +278,7 @@ nodes {
     w: 1.0
   }
   size {
-    x: 2800.0
+    x: 3800.0
     y: 100.0
     z: 0.0
     w: 1.0
@@ -291,7 +291,7 @@ nodes {
   }
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
-  text: "Press 1-5 on keyboard to add 1-5 minute quests."
+  text: "Press 1-5 on keyboard to add 1-5 minute quests. Z to clear finished.  X to clear all."
   font: "system_font"
   id: "help"
   xanchor: XANCHOR_NONE
