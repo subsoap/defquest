@@ -47,4 +47,4 @@ DefQuest is meant for games which have frequent or always on Internet connection
 By default, DefQuest saves its data (using DefSave) to a "defquest" file. You can set the defquest.defsave_filename string to another file, such as your user profile/game data so that users cannot simply swap their defquest files to cheese quest completion over and over.
 
 
-Beware of using Defold's build in date/time functions as they by default work on local timezone.
+Beware of using Lua's build in date/time functions as they by default work on local timezone.
