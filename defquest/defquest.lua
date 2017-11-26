@@ -10,12 +10,14 @@ M.defsave = nil
 M.defwindow = nil
 M.use_defsave = false
 M.use_defwindow = false
-M.disconnected = false
+M.disconnected = true
 M.retry_counter = 0
 M.retry_timer = 10
 M.retry_attempts = 0
 M.retry_attempts_max = -1
 M.verbose = false -- if true then successful connection events will be printed, if false only errors
+M.use_server_time = true -- if true then NTP servers will be used to sync the current time with, if not then local time will be used only
+M.allow_local_time = false -- if true then if NTP servers can't be reached then local time will be synced
 
 function M.window_focus_update(self, event, data)
 	if event == window.WINDOW_EVENT_FOCUS_GAINED then
@@ -35,6 +37,34 @@ function M.init()
 		M.defwindow.add_listener(M.window_focus_update)
 	end
 	
+end
+
+function M.add(id, time, data)
+	local time_now = M.time_now
+	time.seconds = time.seconds or 0
+	time.minutes = time.minutes or 0
+	time.hours = time.hours or 0
+	time.days = time.days or 0
+	time.years = time.years or 0
+		
+	time_now = time_now + time.seconds
+	time_now = time_now + time.minutes * 60
+	time_now = time_now + time.hours * 60 * 60
+	time_now = time_now + time.days * 60 * 60 * 24
+	time_now = time_now + time.years * 60 * 60 * 24 * 365
+
+	local quest = {}
+	quest.id = id
+	quest.end_time = time_now
+	quest.data = data
+	if id == nil then
+		table.insert(M.quests, quest)
+	else
+		M.quests[id] = quest
+	end
+end
+
+function M.mark_finished()
 end
 
 function M.get_finished(number)

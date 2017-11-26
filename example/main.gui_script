@@ -6,8 +6,15 @@ function init(self)
 	defquest.verbose = true
 	defquest.init()
 	
+	defquest.add(nil, {minutes = 5}, {reward_gold = 100})
+	defquest.add(nil, {minutes = 60}, {reward_gold = 100})
+	
+	pprint(defquest.quests)
 	
 	self.node_status = gui.get_node("status")
+	self.node_time = gui.get_node("time")
+	
+
 end
 
 function final(self)
@@ -16,6 +23,8 @@ end
 
 function update(self, dt)
 	defquest.update(dt)
+	
+	gui.set_text(self.node_time, defquest.time_now)
 	
 	if defquest.disconnected == true then
 		gui.set_text(self.node_status, "DISCONNECTED")

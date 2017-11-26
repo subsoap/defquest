@@ -16,4 +16,8 @@ DefQuest has DefSave as an optional dependency if you wish to use it.
 
 ## Usage
 
+Beware of setting times based on "midnight" or "noon" in your local time zone, because the user can change their local device timezone and time at will and use that to time travel. It's better to set times based on amounts of time away from current time so that the future time is timezone agnostic.
+
+Beware of using Defold's build in date/time functions as they by default work on local timezone.
+
 ##
