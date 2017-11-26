@@ -11,6 +11,12 @@ function init(self)
 	defquest.init()
 	
 	--defquest.add(nil, {minutes = 5}, {reward_gold = 100})
+	defquest.add(nil, {minutes = 1}, {reward_gold = 100})
+	defquest.add(nil, {minutes = 1}, {reward_gold = 100})
+	defquest.add(nil, {minutes = 1}, {reward_gold = 100})
+	defquest.add(nil, {minutes = 1}, {reward_gold = 100})
+	defquest.add(nil, {minutes = 2}, {reward_gold = 100})
+	
 	--defquest.add("hour_wait", {minutes = 60}, {reward_gold = 100})
 	
 	pprint(defquest.quests)
@@ -23,7 +29,6 @@ end
 
 function final(self)
 	defquest.final()
-	defsave.save_all()
 end
 
 function update(self, dt)
