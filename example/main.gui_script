@@ -24,6 +24,7 @@ function init(self)
 	
 	defsave.appname = "defquest"
 	defsave.autosave = true
+	defsave.verbose = true
 	
 	--defquest.use_defsave = false
 	--defquest.use_defwindow = false

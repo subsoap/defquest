@@ -18,12 +18,19 @@ M.retry_timer = 10 -- total time in seconds between disconnected retry attemps
 M.retry_attempts = 0 -- current counter value of number of retry attempts
 M.retry_attempts_max = -1 -- maximum retry attempts allow (currently not used)
 M.verbose = true -- if true then successful connection events will be printed, if false only errors
+
+M.use_ntp = true
+M.use_http = true
+M.use_http_for_html5 = true
+M.sysinfo = sys.get_sys_info()
+
 M.use_server_time = true -- if true then NTP servers will be used to sync the current time with, if not then local time will be used only
 M.allow_local_time = false -- if true then if NTP servers can't be reached then local time will be synced (could have BAD results)
 M.defsave_filename = "defquest"
 M.keep_finalized = false -- set to false if you want finalized quests not stored in a finalized table, otherwise they are lost forever once game session closes
 M.check_timer = 60 -- number of seconds in between automatic checks to see if any quests are finished
 M.check_timer_counter = 0 -- current check counter value in seconds
+M.paused = false -- if paused most automatic features do not continue to happen when they normally would, pause when not needed
 
 local function round(x)
 	local a = x % 1
@@ -32,6 +39,33 @@ local function round(x)
 	else a = 1 end
 	return x + a
 end
+
+function M.sync_time()
+	if M.sysinfo.system_name ~= "HTML5" then
+		M.sync_ntp()
+	else
+		M.sync_http()
+	end	
+end
+
+local function http_result(self, _, response)
+	if response.status == 200 then
+    	M.time_now = response.response
+    	print(response.response)
+    	M.disconnected = false
+		M.retry_counter = 0
+		M.retry_attempts = 0    	
+    else
+    	M.disconnected = true
+    end
+end
+
+
+function M.sync_http()
+	http.request("https://www.timestampnow.com/", "GET", http_result)
+end
+
+
 
 function M.difference_from_now(seconds)
 	return seconds - M.time_now
@@ -73,12 +107,12 @@ end
 
 function M.window_focus_update(self, event, data)
 	if event == window.WINDOW_EVENT_FOCUS_GAINED then
-		M.sync_ntp()
+		M.sync_time()
 	end
 end
 
 function M.init()
-	M.sync_ntp()
+	M.sync_time()
 	M.mt.seed_mt(os.time())
 	
 	if M.use_defsave == true then
@@ -226,10 +260,18 @@ function M.update(dt)
 	end
 	if M.retry_counter >= M.retry_timer then
 		M.retry_counter = M.retry_counter - M.retry_timer
-		if not M.sync_ntp() then
+		if not M.sync_time() then
 			M.retry_attempts = M.retry_attempts + 1
-			print("DefQuest: NTP sync retry attempt " .. tostring(M.retry_attempts) .. " failed")
+			if M.sysinfo.system_name ~= "HTML5" then
+				print("DefQuest: NTP sync retry attempt " .. tostring(M.retry_attempts) .. " failed")
+			else
+				print("DefQuest: HTTP sync retry attempt " .. tostring(M.retry_attempts) .. " failed")
+			end
 		end
+	end
+	if M.sysinfo.system_name == "HTML5" then
+		M.defsave.verbose = false
+		M.defsave.save_all()
 	end
 end
 
