@@ -33,6 +33,10 @@ M.check_timer_counter = 0 -- current check counter value in seconds
 M.paused = false -- if paused most automatic features do not continue to happen when they normally would, pause when not needed
 M.default_tags = {}
 
+M.ACTIVE = 1
+M.FINISHED = 2
+M.EITHER = 3
+
 local function round(x)
 	local a = x % 1
 	x = x - a
@@ -204,6 +208,17 @@ function M.mark_finished()
 	return quests_finished
 end
 
+function M.get_active()
+	M.mark_finished()
+	local quests_active = {}
+	for key, value in pairs(M.quests) do
+		if M.quests[key].finished ~= true then
+			table.insert(quests_active, key)
+		end
+	end
+	return quests_active
+end
+
 function M.get_finished()
 	local quests_finished = {}
 	for key, value in pairs(M.quests) do
@@ -214,21 +229,27 @@ function M.get_finished()
 	return quests_finished
 end
 
-function M.get_tagged(tag, finished_only)
+function M.get_tagged(tag, filter)
 	local tagged = {}
-	finished_only = finished_only or false
+	filter = filter or M.EITHER
 	local quest_table = {}
-	if finished_only == true then
+	if filter == M.FINISHED then
 		for key, value in pairs(M.get_finished()) do
 			quest_table[value] = M.quests[value]
 		end
-		--quest_table = M.get_finished()
-	else
+	elseif filter == M.ACTIVE then
+		for key, value in pairs(M.get_active()) do
+			quest_table[value] = M.quests[value]
+		end
+	elseif filter == M.EITHER then
 		quest_table = M.quests
+	else
+		print("DefQuest: Warning! Bad filter option!")
+		return {}
 	end
-	--pprint(quest_table)
+	
 	for key, value in pairs(quest_table) do
-		if quest_table[key].tags ~= nil then -- and (M.quests[key].tags) do do do the[tag] == tag then
+		if quest_table[key].tags ~= nil then
 			for kkey, vvalue in pairs(quest_table[key].tags) do
 				if vvalue == tag then
 					table.insert(tagged, key)
@@ -237,6 +258,12 @@ function M.get_tagged(tag, finished_only)
 		end
 	end
 	return tagged
+end
+
+function M.shift_end_time(quests, seconds)
+	for key, value in pairs(quests) do
+		M.quests[value].end_time = M.quests[value].end_time + seconds
+	end
 end
 
 function M.clear(id)

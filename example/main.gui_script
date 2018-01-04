@@ -101,8 +101,9 @@ function on_input(self, action_id, action)
 		defquest.add(nil, {minutes = 5}, nil)
 	end	
 	if action_id == hash("key_t") and action.released then
-		pprint(defquest.get_tagged("defold", true))
-		
+		--pprint(defquest.get_tagged("defold", defquest.ACTIVE))
+		--pprint(defquest.get_active())
+		defquest.shift_end_time(defquest.get_active(), -10)
 	end
 end
 
