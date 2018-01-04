@@ -103,7 +103,8 @@ function on_input(self, action_id, action)
 	if action_id == hash("key_t") and action.released then
 		--pprint(defquest.get_tagged("defold", defquest.ACTIVE))
 		--pprint(defquest.get_active())
-		defquest.shift_end_time(defquest.get_active(), -10)
+		--defquest.shift_end_time(defquest.get_active(), -10)
+		defquest.clear_batch(defquest.get_active())
 	end
 end
 

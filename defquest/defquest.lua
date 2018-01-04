@@ -283,6 +283,13 @@ function M.clear_all()
 	M.defsave.set(M.defsave_filename, "defquest", M.quests )
 end
 
+function M.clear_batch(quest_ids)
+	for key, value in pairs(quest_ids) do
+		M.quests[value] = nil
+	end
+	M.defsave.set(M.defsave_filename, "defquest", M.quests )
+end
+
 function M.sync_ntp()
 	if not pcall(M.ntp.update_time) then
 		print("DefQuest: Warning cannot sync with NTP servers")
