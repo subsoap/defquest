@@ -31,6 +31,7 @@ M.keep_finalized = false -- set to false if you want finalized quests not stored
 M.check_timer = 60 -- number of seconds in between automatic checks to see if any quests are finished
 M.check_timer_counter = 0 -- current check counter value in seconds
 M.paused = false -- if paused most automatic features do not continue to happen when they normally would, pause when not needed
+M.default_tags = {}
 
 local function round(x)
 	local a = x % 1
@@ -138,7 +139,8 @@ function M.generate_random_id()
 	return "random_id_" .. tostring(number)
 end
 
-function M.add(id, time, data)
+function M.add(id, time, data, tags)
+	tags = tags or M.default_tags
 	local time_now = M.time_now
 	if time.midnight == true then
 		time_now = (round(time_now / 86400) + 1) * 86400
@@ -172,6 +174,7 @@ function M.add(id, time, data)
 	quest.id = id
 	quest.end_time = time_now
 	quest.data = data
+	quest.tags = tags
 	if id == nil then
 		M.quests[M.generate_random_id()] = quest
 	else
@@ -209,6 +212,31 @@ function M.get_finished()
 		end
 	end
 	return quests_finished
+end
+
+function M.get_tagged(tag, finished_only)
+	local tagged = {}
+	finished_only = finished_only or false
+	local quest_table = {}
+	if finished_only == true then
+		for key, value in pairs(M.get_finished()) do
+			quest_table[value] = M.quests[value]
+		end
+		--quest_table = M.get_finished()
+	else
+		quest_table = M.quests
+	end
+	--pprint(quest_table)
+	for key, value in pairs(quest_table) do
+		if quest_table[key].tags ~= nil then -- and (M.quests[key].tags) do do do the[tag] == tag then
+			for kkey, vvalue in pairs(quest_table[key].tags) do
+				if vvalue == tag then
+					table.insert(tagged, key)
+				end
+			end
+		end
+	end
+	return tagged
 end
 
 function M.clear(id)

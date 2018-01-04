@@ -86,7 +86,7 @@ function on_input(self, action_id, action)
 	end
 	
 	if action_id == hash("key_1") and action.released then
-		defquest.add(nil, {minutes = 1}, nil)
+		defquest.add(nil, {minutes = 1}, nil, {"defold", "fish"})
 	end	
 	if action_id == hash("key_2") and action.released then
 		defquest.add(nil, {minutes = 2}, nil)
@@ -100,7 +100,10 @@ function on_input(self, action_id, action)
 	if action_id == hash("key_5") and action.released then
 		defquest.add(nil, {minutes = 5}, nil)
 	end	
-					
+	if action_id == hash("key_t") and action.released then
+		pprint(defquest.get_tagged("defold", true))
+		
+	end
 end
 
 function on_reload(self)

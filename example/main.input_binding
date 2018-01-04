@@ -30,6 +30,10 @@ key_trigger {
   input: KEY_5
   action: "key_5"
 }
+key_trigger {
+  input: KEY_T
+  action: "key_t"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_1
   action: "touch"
